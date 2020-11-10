@@ -16,7 +16,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,10 +34,10 @@ public class BooksFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_books, container, false);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-//        adapter = new BooksAdapter();
-//        recyclerView.setAdapter(adapter);
+        adapter = new BooksAdapter(getActivity());
+        recyclerView.setAdapter(adapter);
 
         // make request
         RetrofitService apiInterface = RetrofitHelper.createService(RetrofitService.class);
@@ -56,7 +56,7 @@ public class BooksFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<BooksResponse>> call, Throwable t) {
-
+                // TODO: 10/11/2020 show error toast
             }
         });
 
