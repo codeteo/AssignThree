@@ -3,6 +3,7 @@ package com.example.myapplication.ui.main.screens;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +15,15 @@ import com.example.myapplication.data.network.RetrofitHelper;
 import com.example.myapplication.data.network.RetrofitService;
 import com.example.myapplication.data.network.responses.BooksResponse;
 import com.example.myapplication.data.preferences.SharedPreferencesManager;
+import com.example.myapplication.utils.AlertDialogHelper;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -70,22 +75,46 @@ public class BooksFragment extends Fragment implements EasyPermissions.Permissio
             }
         });
 
-
-        // set response data to adapter
-
         return view;
     }
 
     @AfterPermissionGranted(RC_WRITE_EXTERNAL_STORAGE)
     public void downloadPDF(BooksResponse book) {
-        DownloadManager downloadmanager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(book.getPdfUrl());
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(book.getTitle());
         request.setDescription("Downloading");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(DOWNLOAD_FOLDER, book.getTitle());
-        downloadmanager.enqueue(request);
+        long downloadId = downloadManager.enqueue(request);
+
+        AlertDialog dialog = AlertDialogHelper.createDialog(
+                getActivity(), book.getTitle(), "Downloading ... ");
+
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        DownloadManager.Query query = new DownloadManager.Query();
+                        query.setFilterById(downloadId);
+                        Cursor cursor = downloadManager.query(query);
+                        cursor.moveToFirst();
+                        int totalSize = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                        int currentSize = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                        int progress = (int) (((float) currentSize) / ((float) totalSize) * 100);
+                        cursor.close();
+
+                        Timber.i("size == %d and total == %d", currentSize, totalSize);
+
+                        getActivity().runOnUiThread(() -> {
+                            if (progress == 100) {
+                                dialog.setMessage("Download Completed!");
+                                timer.cancel();
+                            }
+                        });
+                    }
+                }, 0, 10);
     }
 
     @Override
