@@ -78,6 +78,7 @@ public class BooksFragment extends Fragment implements EasyPermissions.Permissio
         return view;
     }
 
+    // this is not fragment's responsibility
     @AfterPermissionGranted(RC_WRITE_EXTERNAL_STORAGE)
     public void downloadPDF(BooksResponse book) {
         DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);

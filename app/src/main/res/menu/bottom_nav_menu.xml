@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_books"
         android:enabled="true"
         android:icon="@drawable/ic_book"
-        android:title="Books" />
+        android:title="Books"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_misc"
         android:enabled="true"
         android:icon="@drawable/ic_misc"
-        android:title="Misc"/>
+        android:title="Misc"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_link"
         android:enabled="true"
         android:icon="@drawable/ic_link"
-        android:title="Link"/>
+        android:title="Link"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings"
-        android:title="Settings"/>
+        android:title="Settings"
+        app:showAsAction="ifRoom"/>
 
 </menu>
