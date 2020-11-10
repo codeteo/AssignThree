@@ -5,21 +5,25 @@
     <item
         android:id="@+id/action_books"
         android:enabled="true"
-        android:icon="@drawable/ic_book" />
+        android:icon="@drawable/ic_book"
+        android:title="Books" />
 
     <item
         android:id="@+id/action_misc"
         android:enabled="true"
-        android:icon="@drawable/ic_misc" />
+        android:icon="@drawable/ic_misc"
+        android:title="Misc"/>
 
     <item
         android:id="@+id/action_link"
         android:enabled="true"
-        android:icon="@drawable/ic_link" />
+        android:icon="@drawable/ic_link"
+        android:title="Link"/>
 
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
-        android:icon="@drawable/ic_settings" />
+        android:icon="@drawable/ic_settings"
+        android:title="Settings"/>
 
 </menu>
