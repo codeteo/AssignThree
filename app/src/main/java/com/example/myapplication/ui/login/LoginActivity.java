@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +14,7 @@ import com.example.myapplication.data.network.RetrofitHelper;
 import com.example.myapplication.data.network.RetrofitService;
 import com.example.myapplication.data.network.responses.LoginResponse;
 import com.example.myapplication.data.preferences.SharedPreferencesManager;
+import com.example.myapplication.ui.main.MainActivity;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
@@ -71,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     // shouldnt be in the Activity
     private void loginUser() {
 
+        // TODO: 10/11/2020 get values from editTexts
         RetrofitService apiInterface = RetrofitHelper.createService(RetrofitService.class);
         Call<LoginResponse> call = apiInterface.login("TH1234", "3NItas1!");
 
@@ -100,6 +103,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // navigate to Main screen
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         Toast.makeText(getApplicationContext(), "welcome", Toast.LENGTH_LONG).show();
     }
 
