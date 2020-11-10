@@ -1,5 +1,9 @@
 package com.example.myapplication.ui.main.screens;
 
+import android.Manifest;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +22,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
-public class BooksFragment extends Fragment {
+public class BooksFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
+
+    private static final int RC_WRITE_EXTERNAL_STORAGE = 123;
+    public static final String DOWNLOAD_FOLDER = "/download/";
 
     private RecyclerView recyclerView;
 
@@ -36,7 +46,7 @@ public class BooksFragment extends Fragment {
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        adapter = new BooksAdapter(getActivity());
+        adapter = new BooksAdapter(getActivity(), this::startDownload);
         recyclerView.setAdapter(adapter);
 
         // make request
@@ -64,5 +74,45 @@ public class BooksFragment extends Fragment {
         // set response data to adapter
 
         return view;
+    }
+
+    @AfterPermissionGranted(RC_WRITE_EXTERNAL_STORAGE)
+    public void downloadPDF(BooksResponse book) {
+        DownloadManager downloadmanager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(book.getPdfUrl());
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(book.getTitle());
+        request.setDescription("Downloading");
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalPublicDir(DOWNLOAD_FOLDER, book.getTitle());
+        downloadmanager.enqueue(request);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        // required by easyPermissions lib
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        // required by easyPermissions lib
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    public void startDownload(BooksResponse book) {
+        String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(getActivity(), perms)) {
+            Timber.i("mesa sta perms");
+            downloadPDF(book);
+        } else {
+            EasyPermissions.requestPermissions(this, "Write Permissions required!",
+                    RC_WRITE_EXTERNAL_STORAGE, perms);
+        }
     }
 }

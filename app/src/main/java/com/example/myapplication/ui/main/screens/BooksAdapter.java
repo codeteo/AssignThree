@@ -22,8 +22,15 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
     private List<BooksResponse> dataset = new ArrayList<>();
     private Context context;
 
-    public BooksAdapter(Context context) {
+    public interface OnItemClicked {
+        void bookClicked(BooksResponse book);
+    }
+
+    private OnItemClicked callback;
+
+    public BooksAdapter(Context context, OnItemClicked callback) {
         this.context = context;
+        this.callback = callback;
     }
 
     @NonNull
@@ -38,6 +45,7 @@ public class BooksAdapter extends RecyclerView.Adapter<BooksAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.bind(dataset.get(position), context);
+        holder.imageView.setOnClickListener(view -> callback.bookClicked(dataset.get(position)));
     }
 
     @Override
