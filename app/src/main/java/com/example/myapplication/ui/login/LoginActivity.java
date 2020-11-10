@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -13,6 +12,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.network.RetrofitHelper;
 import com.example.myapplication.data.network.RetrofitService;
 import com.example.myapplication.data.network.responses.LoginResponse;
+import com.example.myapplication.data.preferences.SharedPreferencesManager;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,15 +24,20 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private TextInputEditText usernameEditText;
+    private TextInputEditText passwordEditText;
+    private Button btnLogin;
+    private ProgressBar progressBar;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final TextInputEditText usernameEditText = findViewById(R.id.etUsername);
-        final TextInputEditText passwordEditText = findViewById(R.id.etPassword);
-        final Button btnLogin = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        usernameEditText = findViewById(R.id.etUsername);
+        passwordEditText = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.login);
+        progressBar = findViewById(R.id.loading);
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -52,22 +57,18 @@ public class LoginActivity extends AppCompatActivity {
         };
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                // TODO: 10/11/2020
-            }
-            return false;
-        });
 
         btnLogin.setEnabled(true);
         btnLogin.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+
             // TODO: 10/11/2020
             loginUser();
 
         });
     }
 
+    // shouldnt be in the Activity
     private void loginUser() {
 
         RetrofitService apiInterface = RetrofitHelper.createService(RetrofitService.class);
@@ -77,20 +78,28 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call<LoginResponse> call, @NotNull Response<LoginResponse> response) {
                 if (response.isSuccessful()) {
-                    onLoginSuccess();
+                    progressBar.setVisibility(View.GONE);
+                    onLoginSuccess(response.body());
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<LoginResponse> call, @NotNull Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 onLoginError();
             }
         });
 
     }
 
-    private void onLoginSuccess() {
-        // TODO : initiate successful logged in experience
+    private void onLoginSuccess(LoginResponse body) {
+        // save tokens to shared_pref
+        if (body != null) {
+            SharedPreferencesManager.setAccessToken(this, body.getAccessToken());
+            SharedPreferencesManager.setRefreshToken(this, body.getRefreshToken());
+        }
+
+        // navigate to Main screen
         Toast.makeText(getApplicationContext(), "welcome", Toast.LENGTH_LONG).show();
     }
 
