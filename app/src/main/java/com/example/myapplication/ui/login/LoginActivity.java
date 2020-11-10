@@ -24,8 +24,8 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextInputEditText usernameEditText;
-    private TextInputEditText passwordEditText;
+    private TextInputEditText etUsername;
+    private TextInputEditText etPassword;
     private Button btnLogin;
     private ProgressBar progressBar;
 
@@ -34,8 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        usernameEditText = findViewById(R.id.etUsername);
-        passwordEditText = findViewById(R.id.etPassword);
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.login);
         progressBar = findViewById(R.id.loading);
 
@@ -52,7 +52,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // TODO: 10/11/2020 get values from editTexts
         RetrofitService apiInterface = RetrofitHelper.createService(RetrofitService.class);
-        Call<LoginResponse> call = apiInterface.login("TH1234", "3NItas1!");
+        Call<LoginResponse> call = apiInterface.login(
+                etUsername.toString().trim(),
+                etPassword.toString().trim());
 
         call.enqueue(new Callback<LoginResponse>() {
             @Override
@@ -60,6 +62,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     progressBar.setVisibility(View.GONE);
                     onLoginSuccess(response.body());
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    onLoginError();
                 }
             }
 
