@@ -41,11 +41,6 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
                 return true;
             case R.id.action_misc:
-/*
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment, new BooksFragment())
-                        .commit();
-*/
                 return true;
             case R.id.action_link:
                 return true;

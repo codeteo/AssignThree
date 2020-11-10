@@ -64,9 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
 
-            // TODO: 10/11/2020
             loginUser();
-
         });
     }
 
@@ -105,7 +103,6 @@ public class LoginActivity extends AppCompatActivity {
         // navigate to Main screen
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-        Toast.makeText(getApplicationContext(), "welcome", Toast.LENGTH_LONG).show();
     }
 
     private void onLoginError() {
