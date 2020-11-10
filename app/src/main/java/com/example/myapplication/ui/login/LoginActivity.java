@@ -2,8 +2,6 @@ package com.example.myapplication.ui.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -40,25 +38,6 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.login);
         progressBar = findViewById(R.id.loading);
-
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO: 10/11/2020
-            }
-        };
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
 
         btnLogin.setEnabled(true);
         btnLogin.setOnClickListener(v -> {
