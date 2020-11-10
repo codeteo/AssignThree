@@ -10,10 +10,17 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.network.RetrofitHelper;
+import com.example.myapplication.data.network.RetrofitService;
+import com.example.myapplication.data.network.responses.LoginResponse;
 import com.google.android.material.textfield.TextInputEditText;
 
-import androidx.annotation.StringRes;
+import org.jetbrains.annotations.NotNull;
+
 import androidx.appcompat.app.AppCompatActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,10 +59,34 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
+        btnLogin.setEnabled(true);
         btnLogin.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
             // TODO: 10/11/2020
+            loginUser();
+
         });
+    }
+
+    private void loginUser() {
+
+        RetrofitService apiInterface = RetrofitHelper.createService(RetrofitService.class);
+        Call<LoginResponse> call = apiInterface.login("TH1234", "3NItas1!");
+
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(@NotNull Call<LoginResponse> call, @NotNull Response<LoginResponse> response) {
+                if (response.isSuccessful()) {
+                    onLoginSuccess();
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<LoginResponse> call, @NotNull Throwable t) {
+                onLoginError();
+            }
+        });
+
     }
 
     private void onLoginSuccess() {
@@ -63,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "welcome", Toast.LENGTH_LONG).show();
     }
 
-    private void onLoginError(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    private void onLoginError() {
+        Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
     }
 }
